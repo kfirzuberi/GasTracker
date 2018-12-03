@@ -14,8 +14,19 @@ import thunkMiddleware from 'redux-thunk';
 import { Provider } from 'react-redux'
 import rootReducer from './reducers';
 
-import RecordsList from './components/RecordsList';
-import NewRecordForm from './components/NewRecordForm';
+import AppNavigator from './screens/AppNavigator';
+
+/*
+
+
+   <View style={styles.container}>
+        <Text style={styles.welcome}>Welcome to React Native!</Text>
+        <Text style={styles.instructions}>To get started, edit App.js</Text>
+        <Text style={styles.instructions}>{instructions}</Text>
+        <View  style={{height:200}}>
+            <NewRecordForm></NewRecordForm>
+        </View>
+*/
 
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 
@@ -31,17 +42,12 @@ export default class App extends Component<Props> {
   render() {
     return (
        <Provider store={store}>
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-        <View  style={{height:200}}>
-            <NewRecordForm></NewRecordForm>
-        </View>
 
-        <RecordsList></RecordsList>
+   <AppNavigator />
 
-      </View>
+
+
+
        </Provider>
     );
   }

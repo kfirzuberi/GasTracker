@@ -35,16 +35,16 @@ class GasStationSelector extends Component {
         onPress={this.updateIndex}
         selectedIndex={selectedIndex}
         buttons={buttons}
-        containerStyle={{ height: 40, width: 250 }} />
+        containerStyle={{ height: 50, flex: 1 }} />
     );
   }
 }
 
 const styles = StyleSheet.create({
   fieldIcon: {
-    width: 32,
+    width: 40,
 
-    height: 32,
+    height: 40,
     resizeMode: 'contain',
     marginLeft: 10,
     marginRight: 10
