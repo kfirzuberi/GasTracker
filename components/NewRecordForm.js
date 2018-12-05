@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import { AppRegistry, FlatList, StyleSheet, Text, View, Image, TextInput, ScrollView, Button, Dimensions } from 'react-native';
-
+import ImagePicker from 'react-native-image-crop-picker';
 
 import { connect } from 'react-redux'
 import { globalOperations } from '../duck/index';
 
 import GasStationSelector from './GasStationSelector';
 
-  var widthWin = Dimensions.get('window').width; //full width
-  var heightWin = Dimensions.get('window').height; //full height
+  const widthWin = Dimensions.get('window').width; //full width
+  const heightWin = Dimensions.get('window').height; //full height
 
-    console.log("ssss" + widthWin);
 
 class NewRecordForm extends Component {
   constructor(props) {
@@ -19,7 +18,8 @@ class NewRecordForm extends Component {
       price: 0,
       liters: 0,
       km: 0,
-      gasStation: ''
+      gasStation: '',
+      kmImage: ''
     };
   }
 
@@ -27,7 +27,27 @@ class NewRecordForm extends Component {
     this.props.addNewRecord(this.state);
   }
 
+ captureImage = event => {
+    ImagePicker.openCamera({
+      width: 300,
+      includeExif : true,
+      mediaType: 'photo',
+      height: 400,
+      cropping: true
+    }).then(image => {
+      console.log(image);
+      this.setState({ kmImage : image });
+    });
+  }
+
   render() {
+    let kmImageObject;
+
+    if (this.state.kmImage==='') {
+      kmImageObject = <Image style={styles.imageIcon} source={require('../assets/images/formIcons/picture.png')} />;
+    } else {
+      kmImageObject = <Image style={styles.imageIcon} source={{uri: this.state.kmImage.path}} />;
+    }
 
     return (
    <View >
@@ -35,12 +55,12 @@ class NewRecordForm extends Component {
     <View style={styles.row}>
         <View style={styles.col}>
             <Image style={styles.imageIcon} source={require('../assets/images/formIcons/price.png')} />
-            <TextInput style={styles.inputField} placeholder="0" onChangeText={(price) => this.setState({ price })}/>
+            <TextInput style={styles.inputField} placeholder="0" keyboardType='numeric' onChangeText={(price) => this.setState({ price })}/>
             <Text style={styles.label}>₪ </Text>
         </View>
         <View style={styles.col}>
             <Image style={styles.imageIcon} source={require('../assets/images/formIcons/liter.png')} />
-            <TextInput style={styles.inputField} placeholder="0" onChangeText={(liters) => this.setState({ liters })}/>
+            <TextInput style={styles.inputField} placeholder="0" keyboardType='numeric' onChangeText={(liters) => this.setState({ liters })}/>
             <Text style={styles.label}>L</Text>
         </View>
     </View>
@@ -48,7 +68,7 @@ class NewRecordForm extends Component {
     <View style={styles.row}>
         <View style={styles.fullCol}>
             <Image style={styles.imageIcon} source={require('../assets/images/formIcons/km.png')} />
-            <TextInput style={styles.inputField} placeholder="00000000" onChangeText={(km) => this.setState({ km })}/>
+            <TextInput style={styles.inputField} placeholder="00000000" keyboardType='numeric' onChangeText={(km) => this.setState({ km })}/>
             <Text style={styles.label}>KM</Text>
         </View>
     </View>
@@ -61,11 +81,20 @@ class NewRecordForm extends Component {
 
 
         <Button
+          onPress={this.captureImage}
+          title="capture"
+          color="#841584"
+          accessibilityLabel="Learn more about this purple button"
+        />
+
+{kmImageObject}
+        <Button
           onPress={this.handleOnPress}
           title="Save"
           color="#841584"
           accessibilityLabel="Learn more about this purple button"
-        /></View>
+        />
+	</View>
     );
   }
 }
@@ -104,45 +133,6 @@ label:{
     fontSize: 20,
     marginTop: 35
 }
-
-
-
-/*
-inputFieldsView : {
-  height: 400,
-},
-
-col : {
-width : 200,
-flex: 1, flexDirection: 'row'
-},
-
-row : {
-width : 300,
-height:40
-},
-
-  fieldIcon: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
-    marginLeft: 10,
-    marginRight: 10
-  },
-
-  fieldInputText: {
-    height: 32,
-    fontSize: 32
-  },
-  fieldRow: { flex: 1, flexDirection: 'row', marginBottom: 10 },
-  label: {
-    height: 40,
-    fontSize: 14,
-    marginTop: 20
-  }
-
-  */
-
 });
 
 
@@ -154,7 +144,4 @@ const mapDispatchToProps = dispatch => ({
   addNewRecord: newRecord => dispatch(globalOperations.addNewRecordDispatcher(newRecord))
 })
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(NewRecordForm)
+export default connect(  mapStateToProps,  mapDispatchToProps)(NewRecordForm)
