@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppRegistry, FlatList, StyleSheet, Text, View, Image, TextInput, ScrollView, Button, Dimensions } from 'react-native';
+import { AppRegistry, FlatList, StyleSheet, Text, View, Image, TextInput, ScrollView, Button, Dimensions,TouchableHighlight } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 
 import { connect } from 'react-redux'
@@ -19,7 +19,8 @@ class NewRecordForm extends Component {
       liters: 0,
       km: 0,
       gasStation: '',
-      kmImage: ''
+      kmImage: '',
+      receiptImage: '',
     };
   }
 
@@ -27,7 +28,7 @@ class NewRecordForm extends Component {
     this.props.addNewRecord(this.state);
   }
 
- captureImage = event => {
+ captureImage = imageObjectName => {
     ImagePicker.openCamera({
       width: 300,
       includeExif : true,
@@ -36,18 +37,34 @@ class NewRecordForm extends Component {
       cropping: true
     }).then(image => {
       console.log(image);
-      this.setState({ kmImage : image });
+      switch (imageObjectName){
+      case 'kmImage':
+        this.setState({ kmImage : image });
+        break;
+
+         case 'receiptImage':
+              this.setState({ receiptImage : image });
+              break;
+            }
+
     });
   }
 
   render() {
-    let kmImageObject;
+    let kmImageObject, receiptImageObject;
 
     if (this.state.kmImage==='') {
-      kmImageObject = <Image style={styles.imageIcon} source={require('../assets/images/formIcons/picture.png')} />;
+      kmImageObject = <TouchableHighlight onPress={this.captureImage.bind(this,'kmImage')}><Image  style={styles.uploadImage} source={require('../assets/images/formIcons/picture.png')} /></TouchableHighlight>;
     } else {
-      kmImageObject = <Image style={styles.imageIcon} source={{uri: this.state.kmImage.path}} />;
+      kmImageObject = <Image style={styles.uploadImage} source={{uri: this.state.kmImage.path}} />;
     }
+
+   if (this.state.receiptImage==='') {
+      receiptImageObject = <TouchableHighlight onPress={this.captureImage.bind(this,'receiptImage')}><Image  style={styles.uploadImage} source={require('../assets/images/formIcons/picture.png')} /></TouchableHighlight>;
+    } else {
+      receiptImageObject = <Image style={styles.uploadImage} source={{uri: this.state.receiptImage.path}} />;
+    }
+
 
     return (
    <View >
@@ -87,7 +104,21 @@ class NewRecordForm extends Component {
           accessibilityLabel="Learn more about this purple button"
         />
 
-{kmImageObject}
+            <View style={styles.fullRow}>
+                <View style={styles.imageContainer}>
+                 {kmImageObject}
+                                                 <Text>Kilometrage</Text>
+
+                </View>
+                    <View style={styles.imageContainer}>
+                                 {receiptImageObject}
+                                 <Text>Receipt</Text>
+                                </View>
+
+              </View>
+
+
+
         <Button
           onPress={this.handleOnPress}
           title="Save"
@@ -105,6 +136,10 @@ row :{
     height: 80,
     padding: 5,
 },
+fullRow:{
+   flexDirection: 'row',
+    padding: 5,
+},
 col:{
     padding: 5,
     flexDirection: 'row',
@@ -120,6 +155,19 @@ imageIcon: {
     height: 60,
     resizeMode: 'contain',
     marginRight: 10
+},
+uploadImage: {
+    width: 128,
+    height: 128,
+    resizeMode: 'contain',
+ //   marginRight: 10
+},
+
+imageContainer:{
+flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        margin:'auto'
 },
     inputField:{
     flex : 1,
