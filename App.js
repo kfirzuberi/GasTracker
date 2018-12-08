@@ -6,27 +6,16 @@
  * @flow
  */
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import React, { Component } from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { Provider } from 'react-redux'
 import rootReducer from './reducers';
 
-import AppNavigator from './screens/AppNavigator';
-
-/*
-
-
-   <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-        <View  style={{height:200}}>
-            <NewRecordForm></NewRecordForm>
-        </View>
-*/
+import { createRootNavigator } from "./router";
+import { isSignedIn } from "./auth";
 
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 
@@ -39,16 +28,35 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      signedIn: false,
+      checkedSignIn: false
+    };
+  }
+
+  componentDidMount() {
+    isSignedIn()
+      .then(res => this.setState({ signedIn: res, checkedSignIn: true }))
+      .catch(err => alert("An error occurred"));
+  }
+
   render() {
+
+    const { checkedSignIn, signedIn } = this.state;
+
+    // If we haven't checked AsyncStorage yet, don't render anything (better ways to do this)
+    if (!checkedSignIn) {
+      return null;
+    }
+
+    const Layout = createRootNavigator(signedIn);
     return (
-       <Provider store={store}>
-
-   <AppNavigator />
-
-
-
-
-       </Provider>
+      <Provider store={store}>
+        <Layout />
+      </Provider>
     );
   }
 }
