@@ -15,7 +15,8 @@ import { Provider } from 'react-redux'
 import rootReducer from './reducers';
 
 import { createRootNavigator } from "./router";
-import { isSignedIn } from "./auth";
+import firebase from '@firebase/app';
+import 'firebase/auth';
 
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 
@@ -33,26 +34,24 @@ export default class App extends Component<Props> {
 
     this.state = {
       signedIn: false,
-      checkedSignIn: false
+      checkedSignIn: false,
+      loading: true,
     };
   }
 
   componentDidMount() {
-    isSignedIn()
-      .then(res => this.setState({ signedIn: res, checkedSignIn: true }))
-      .catch(err => alert("An error occurred"));
+      this.authSubscription = firebase.auth().onAuthStateChanged((user) => {
+        this.setState({
+          loading: false,
+          user,
+        });
+      });
   }
 
   render() {
+    if (this.state.loading) return null;
 
-    const { checkedSignIn, signedIn } = this.state;
-
-    // If we haven't checked AsyncStorage yet, don't render anything (better ways to do this)
-    if (!checkedSignIn) {
-      return null;
-    }
-
-    const Layout = createRootNavigator(signedIn);
+    const Layout = createRootNavigator(this.state.user);
     return (
       <Provider store={store}>
         <Layout />

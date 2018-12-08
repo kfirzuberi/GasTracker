@@ -40,6 +40,7 @@ const addNewRecordDispatcher = newRecord => {
         price: parseInt(newRecord.price),
         gasStation: newRecord.gasStation,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        uid: firebase.auth().uid,
         ...data
       };
 
@@ -84,8 +85,8 @@ const uploadImage = (uri, name, mime = 'image/jpeg') => {
   return new Promise((resolve, reject) => {
     let imgUri = uri; let uploadBlob = null;
     const uploadUri = Platform.OS === 'ios' ? imgUri.replace('file://', '') : imgUri;
-    //const { currentUser } = firebase.auth();
-    const currentUser = { uid: 'kfir' };
+    const { currentUser } = firebase.auth();
+   // const currentUser = { uid: 'kfir' };
     const dir = moment().format('DD-MM-YYYY HH:mm');
     const imageRef = firebase.storage().ref(`/images/${currentUser.uid}/${dir}/${name}`)
 

@@ -3,44 +3,30 @@ import { AppRegistry, FlatList, StyleSheet, Text, View, Image, Dimensions } from
 import { RecordItem } from './RecordItem';
 
 import { connect } from 'react-redux';
-import { List , ListItem} from 'react-native-elements'
+import { List, ListItem } from 'react-native-elements'
 
-//import { watchFetchRecords } from '../reducers/index';
 import { globalOperations } from '../duck/index';
-
 
 var width = Dimensions.get('window').width; //full width
 var height = Dimensions.get('window').height; //full height
 
-
 class RecordsList extends React.Component {
-constructor(props) {
-  super(props);
+  constructor(props) {
+    super(props);
 
- this.props.watchRecordsDispatcher();
-}
+    this.props.watchRecordsDispatcher();
+  }
 
   renderItem = ({ item }) => (
-    <RecordItem item={item}/>
+    <RecordItem item={item} />
   );
 
   render() {
     return (
       <View style={styles.container}>
-
         <List>
-
-
-
-
-
-        <FlatList
-         data={ this.props.records}
-        renderItem={this.renderItem}
-        />
-
-
-              </List>
+          <FlatList data={this.props.records} renderItem={this.renderItem} />
+        </List>
       </View>
     );
   }
@@ -48,7 +34,7 @@ constructor(props) {
 
 const styles = StyleSheet.create({
   container: {
-  width : width
+    width: width
   },
   item: {
     padding: 10,
