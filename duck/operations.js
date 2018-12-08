@@ -2,6 +2,7 @@ import actions from './actions';
 import firebase from '@firebase/app';
 import 'firebase/firestore';
 import 'firebase/storage';
+import 'firebase/auth';
 import RNFetchBlob from 'rn-fetch-blob';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
@@ -131,7 +132,28 @@ const watchRecordsDispatcher = () => {
   }
 };
 
+const signUpDispatcher = newUser => {
+  return dispatch => {
+    const { email, password } =newUser;
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+          .then((user) => {
+            // If you need to do anything with the user, do it here
+            // The user will be logged in automatically by the
+            // `onAuthStateChanged` listener we set up in App.js earlier
+          })
+          .catch((error) => {
+            const { code, message } = error;
+            // For details of error codes, see the docs
+            // The message contains the default Firebase string
+            // representation of the error
+          });
+
+    dispatch(actions.signUp(newUser));
+  }
+};
+
 export default {
   addNewRecordDispatcher,
-  watchRecordsDispatcher
+  watchRecordsDispatcher,
+  signUpDispatcher
 }
