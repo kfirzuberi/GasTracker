@@ -5,6 +5,7 @@ import 'firebase/storage';
 import RNFetchBlob from 'rn-fetch-blob';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
+import moment from 'moment';
 
 setTimeout = BackgroundTimer.setTimeout.bind(BackgroundTimer);
 setInterval = BackgroundTimer.setInterval.bind(BackgroundTimer);
@@ -31,16 +32,18 @@ firebase.firestore.setLogLevel('debug');
 
 const addNewRecordDispatcher = newRecord => {
   return dispatch => {
-    uploadImage(newRecord.kmImage.path, 'kmImage').then(data => {
+    uploadImages(newRecord).then(data => {
 
-      const itemToAdd = {
+      let itemToAdd = {
         km: parseInt(newRecord.km),
         liters: parseInt(newRecord.liters),
         price: parseInt(newRecord.price),
         gasStation: newRecord.gasStation,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        kmImagePath: data
+        ...data
       };
+
+
       firestore.collection('records').add(itemToAdd).then(ref => {
       }).catch(error => {
       });
@@ -50,19 +53,41 @@ const addNewRecordDispatcher = newRecord => {
   }
 };
 
-const uploadImage = (uri, name, mime = 'image/jpeg') => {
+const uploadImages = newRecord=>{
+  let imgPromises = [];
   const origXMLHttpRequest = window.XMLHttpRequest;
   const origBlob = window.Blob;
 
   window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
   window.Blob = Blob;
 
+  if (newRecord.kmImage.path) {
+    imgPromises.push(uploadImage(newRecord.kmImage.path, 'kmImage'));
+  }
+
+  if (newRecord.receiptImage.path) {
+    imgPromises.push(uploadImage(newRecord.receiptImage.path, 'receiptImage'));
+  }
+
+  return Promise.all(imgPromises).then(urls => {
+    window.XMLHttpRequest = origXMLHttpRequest;
+    window.Blob = origBlob;
+  
+    return urls.reduce((result, item)=> {
+      result[item.name] = item.path;
+      return result;
+    }, {});;
+  });
+}
+
+const uploadImage = (uri, name, mime = 'image/jpeg') => {
   return new Promise((resolve, reject) => {
     let imgUri = uri; let uploadBlob = null;
     const uploadUri = Platform.OS === 'ios' ? imgUri.replace('file://', '') : imgUri;
     //const { currentUser } = firebase.auth();
     const currentUser = { uid: 'kfir' };
-    const imageRef = firebase.storage().ref(`/images/${currentUser.uid}`)
+    const dir = moment().format('DD-MM-YYYY HH:mm');
+    const imageRef = firebase.storage().ref(`/images/${currentUser.uid}/${dir}/${name}`)
 
     fs.readFile(uploadUri, 'base64')
       .then(data => {
@@ -77,13 +102,9 @@ const uploadImage = (uri, name, mime = 'image/jpeg') => {
         return imageRef.getDownloadURL();
       })
       .then(url => {
-        window.XMLHttpRequest = origXMLHttpRequest;
-        window.Blob = origBlob;
-        resolve(url);
+        resolve({name : name, path : url});
       })
       .catch(error => {
-        window.XMLHttpRequest = origXMLHttpRequest;
-        window.Blob = origBlob;
         reject(error)
       })
   })
