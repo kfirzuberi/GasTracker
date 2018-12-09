@@ -10,7 +10,6 @@ import GasStationSelector from './GasStationSelector';
 const widthWin = Dimensions.get('window').width; //full width
 const heightWin = Dimensions.get('window').height; //full height
 
-
 class NewRecordForm extends Component {
   constructor(props) {
     super(props);

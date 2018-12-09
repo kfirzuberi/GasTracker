@@ -13,10 +13,7 @@ import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { Provider } from 'react-redux'
 import rootReducer from './reducers';
-
-import { createRootNavigator } from "./router";
-import firebase from '@firebase/app';
-import 'firebase/auth';
+import RouterNavigator from "./RouterNavigator";
 
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 
@@ -29,52 +26,11 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      signedIn: false,
-      checkedSignIn: false,
-      loading: true,
-    };
-  }
-
-  componentDidMount() {
-      this.authSubscription = firebase.auth().onAuthStateChanged((user) => {
-        this.setState({
-          loading: false,
-          user,
-        });
-      });
-  }
-
   render() {
-    if (this.state.loading) return null;
-
-    const Layout = createRootNavigator(this.state.user);
     return (
       <Provider store={store}>
-        <Layout />
+        <RouterNavigator />
       </Provider>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});

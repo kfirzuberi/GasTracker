@@ -7,6 +7,8 @@ import RNFetchBlob from 'rn-fetch-blob';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import moment from 'moment';
+import NavigationService from '../services/NavigationService';
+
 
 setTimeout = BackgroundTimer.setTimeout.bind(BackgroundTimer);
 setInterval = BackgroundTimer.setInterval.bind(BackgroundTimer);
@@ -34,6 +36,7 @@ firebase.firestore.setLogLevel('debug');
 const addNewRecordDispatcher = newRecord => {
   return dispatch => {
     uploadImages(newRecord).then(data => {
+      const { currentUser } = firebase.auth();
 
       let itemToAdd = {
         km: parseInt(newRecord.km),
@@ -41,7 +44,7 @@ const addNewRecordDispatcher = newRecord => {
         price: parseInt(newRecord.price),
         gasStation: newRecord.gasStation,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        uid: firebase.auth().uid,
+        uid: `${currentUser.uid}`,
         ...data
       };
 
@@ -55,7 +58,7 @@ const addNewRecordDispatcher = newRecord => {
   }
 };
 
-const uploadImages = newRecord=>{
+const uploadImages = newRecord => {
   let imgPromises = [];
   const origXMLHttpRequest = window.XMLHttpRequest;
   const origBlob = window.Blob;
@@ -74,8 +77,8 @@ const uploadImages = newRecord=>{
   return Promise.all(imgPromises).then(urls => {
     window.XMLHttpRequest = origXMLHttpRequest;
     window.Blob = origBlob;
-  
-    return urls.reduce((result, item)=> {
+
+    return urls.reduce((result, item) => {
       result[item.name] = item.path;
       return result;
     }, {});;
@@ -87,7 +90,7 @@ const uploadImage = (uri, name, mime = 'image/jpeg') => {
     let imgUri = uri; let uploadBlob = null;
     const uploadUri = Platform.OS === 'ios' ? imgUri.replace('file://', '') : imgUri;
     const { currentUser } = firebase.auth();
-   // const currentUser = { uid: 'kfir' };
+    // const currentUser = { uid: 'kfir' };
     const dir = moment().format('DD-MM-YYYY HH:mm');
     const imageRef = firebase.storage().ref(`/images/${currentUser.uid}/${dir}/${name}`)
 
@@ -104,7 +107,7 @@ const uploadImage = (uri, name, mime = 'image/jpeg') => {
         return imageRef.getDownloadURL();
       })
       .then(url => {
-        resolve({name : name, path : url});
+        resolve({ name: name, path: url });
       })
       .catch(error => {
         reject(error)
@@ -134,26 +137,83 @@ const watchRecordsDispatcher = () => {
 
 const signUpDispatcher = newUser => {
   return dispatch => {
-    const { email, password } =newUser;
+    const { email, password } = newUser;
     firebase.auth().createUserWithEmailAndPassword(email, password)
-          .then((user) => {
-            // If you need to do anything with the user, do it here
-            // The user will be logged in automatically by the
-            // `onAuthStateChanged` listener we set up in App.js earlier
-          })
-          .catch((error) => {
-            const { code, message } = error;
-            // For details of error codes, see the docs
-            // The message contains the default Firebase string
-            // representation of the error
-          });
+      .then((user) => {
+        dispatch(actions.signUp(newUser));
+      }).catch((error) => {
+        const { code, message } = error;
+        switch (code) {
+          case 'auth/email-already-in-use':
+            console.log('email-already-in-use');
+            break;
+          case 'auth/invalid-email':
+            console.log('invalid-email');
+            break;
+          case 'auth/operation-not-allowed':
+            console.log('operation-not-allowed');
+            break;
+          case 'auth/weak-password':
+            console.log('weak-password');
+            break;
+        }
+      });
+  }
+};
 
-    dispatch(actions.signUp(newUser));
+const signInDispatcher = userData => {
+  return dispatch => {
+    const { email, password } = userData;
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((user) => {
+        dispatch(actions.signIn(userData));
+        NavigationService.navigate("SignedIn");
+      }).catch((error) => {
+        const { code, message } = error;
+        switch (code) {
+          case 'auth/invalid-email':
+            console.log('invalid-email');
+            break;
+          case 'auth/user-disabled':
+            console.log('user-disabled');
+            break;
+          case 'auth/user-not-found':
+            console.log('user-not-found');
+            break;
+          case 'auth/wrong-password':
+            console.log('wrong-password');
+            break;
+        }
+      });
+  }
+};
+
+const signOutDispatcher = () => {
+  return dispatch => {
+    firebase.auth().signOut().then(() => {
+      NavigationService.navigate("SignedOut");
+    });
+    dispatch(actions.signOut());
+  }
+};
+
+const watchAuthStateChangedDispatcher = () => {
+  return dispatch => {
+    //this.authSubscription = 
+    firebase.auth().onAuthStateChanged((user) => {
+      dispatch(actions.authStateChanged({
+        loading: false,
+        user,
+      }));
+    });
   }
 };
 
 export default {
   addNewRecordDispatcher,
   watchRecordsDispatcher,
-  signUpDispatcher
+  signUpDispatcher,
+  signOutDispatcher,
+  signInDispatcher,
+  watchAuthStateChangedDispatcher
 }

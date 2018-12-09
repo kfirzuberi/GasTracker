@@ -1,45 +1,49 @@
 import React, { Component } from 'react';
 import { View } from "react-native";
 import { Card, Button, Text } from "react-native-elements";
-import firebase from '@firebase/app';
-import 'firebase/firestore';
+import { connect } from 'react-redux';
+import { globalOperations } from '../duck/index';
 
-
-export class Profile extends Component {
+class Profile extends Component {
 
     handleOnSignOut = event => {
-        firebase.auth().signOut().then(()=>{
-            this.props.navigation.navigate("SignedOut");
-        })
+        this.props.signOut();
     }
-  
+
     render() {
-      return (
-        <View style={{ paddingVertical: 20 }}>
-        <Card title="John Doe">
-          <View
-            style={{
-              backgroundColor: "#bcbec1",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 80,
-              height: 80,
-              borderRadius: 40,
-              alignSelf: "center",
-              marginBottom: 20
-            }}
-          >
-            <Text style={{ color: "white", fontSize: 28 }}>JD</Text>
-          </View>
-          <Button
-            backgroundColor="#03A9F4"
-            title="SIGN OUT"
-            onPress={this.handleOnSignOut}
-          />
-        </Card>
-      </View>
-      )
+        return (
+            <View style={{ paddingVertical: 20 }}>
+                <Card title="John Doe">
+                    <View
+                        style={{
+                            backgroundColor: "#bcbec1",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 80,
+                            height: 80,
+                            borderRadius: 40,
+                            alignSelf: "center",
+                            marginBottom: 20
+                        }}>
+                        <Text style={{ color: "white", fontSize: 28 }}>JD</Text>
+                    </View>
+                    <Button
+                        backgroundColor="#03A9F4"
+                        title="SIGN OUT"
+                        onPress={this.handleOnSignOut}
+                    />
+                </Card>
+            </View>
+        )
     }
-  };
-  
-  export default Profile;
+};
+
+const mapStateToProps = state => ({
+
+})
+
+const mapDispatchToProps = dispatch => ({
+    signOut: () => dispatch(globalOperations.signOutDispatcher())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile)

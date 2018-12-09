@@ -5,6 +5,9 @@ const ADD_NEW_RECORD = 'RECORDS/ADD_NEW_RECORD';
 const SIGN_UP = 'AUTH/SIGN_UP';
 const SIGN_IN = 'AUTH/SIGN_IN';
 const SIGN_OUT = 'AUTH/SIGN_OUT';
+const AUTH_STATE_CHANGED = 'AUTH/AUTH_STATE_CHANGED';
+
+
 
 
 export default {
@@ -12,5 +15,6 @@ export default {
     ADD_NEW_RECORD,
     SIGN_UP,
     SIGN_IN,
-    SIGN_OUT
+    SIGN_OUT,
+    AUTH_STATE_CHANGED
 }
