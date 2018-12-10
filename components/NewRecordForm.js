@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
 import { AppRegistry, FlatList, StyleSheet, Text, View, Image, TextInput, ScrollView, Button, Dimensions, TouchableHighlight } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-
 import { connect } from 'react-redux'
 import { globalOperations } from '../duck/index';
-
 import GasStationSelector from './GasStationSelector';
-
-const widthWin = Dimensions.get('window').width; //full width
-const heightWin = Dimensions.get('window').height; //full height
 
 class NewRecordForm extends Component {
   constructor(props) {
@@ -20,6 +15,10 @@ class NewRecordForm extends Component {
       gasStation: '',
       kmImage: '',
       receiptImage: '',
+      location : {
+        latitude: 0,
+        longitude : 0
+      }
     };
   }
 
@@ -42,7 +41,6 @@ class NewRecordForm extends Component {
   render() {
     return (
       <View >
-
         <View style={styles.row}>
           <View style={styles.col}>
             <Image style={styles.imageIcon} source={require('../assets/images/formIcons/price.png')} />
@@ -66,7 +64,8 @@ class NewRecordForm extends Component {
         <View style={styles.row}>
           <View style={styles.fullCol}>
             <Image style={styles.imageIcon} source={require('../assets/images/formIcons/gas.png')} />
-            <GasStationSelector updateGasStation={(gasStation) => { this.setState({ gasStation }) }} />
+            <GasStationSelector autoSelect={true} updateLocation=  {(location) => { this.setState({ location }) }}
+            updateGasStation={(gasStation) => { this.setState({ gasStation }) }} />
           </View>
         </View>
 

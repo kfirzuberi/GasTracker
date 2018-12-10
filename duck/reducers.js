@@ -37,7 +37,6 @@ const authReducer = (state = authInitialState, action) => {
     }
 };
 
-
 export {
     globalReducer, authReducer
 }

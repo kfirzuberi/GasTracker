@@ -9,7 +9,6 @@ import BackgroundTimer from 'react-native-background-timer';
 import moment from 'moment';
 import NavigationService from '../services/NavigationService';
 
-
 setTimeout = BackgroundTimer.setTimeout.bind(BackgroundTimer);
 setInterval = BackgroundTimer.setInterval.bind(BackgroundTimer);
 clearTimeout = BackgroundTimer.clearTimeout.bind(BackgroundTimer);
@@ -45,9 +44,9 @@ const addNewRecordDispatcher = newRecord => {
         gasStation: newRecord.gasStation,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         uid: `${currentUser.uid}`,
+        location: new firebase.firestore.GeoPoint(newRecord.location.latitude, newRecord.location.longitude),
         ...data
       };
-
 
       firestore.collection('records').add(itemToAdd).then(ref => {
       }).catch(error => {
