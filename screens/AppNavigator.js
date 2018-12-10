@@ -10,4 +10,4 @@ const AppNavigator = createStackNavigator({
   HomeScreen: { screen: RecordsListScreen },
 });
 
-export default createAppContainer(AppNavigator);
+export default AppNavigator;

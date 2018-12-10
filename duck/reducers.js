@@ -1,12 +1,16 @@
 import types from './types';
 
-const initialState = {
+const globalInitialState = {
     personData: {},
     records: []
 }
 
+const authInitialState = {
+    loading: true,
+    user : undefined,
+}
 
-const globalReducer = (state = initialState, action) => {
+const globalReducer = (state = globalInitialState, action) => {
     switch (action.type) {
         case types.FETCH_RECORDS:
             return {
@@ -19,4 +23,21 @@ const globalReducer = (state = initialState, action) => {
     }
 };
 
-export default globalReducer;
+const authReducer = (state = authInitialState, action) => {
+    switch (action.type) {
+        case types.AUTH_STATE_CHANGED:
+        return {
+            ...state,
+            user: action.value.user,
+            loading: action.value.loading,
+        };
+
+        default:
+            return state;
+    }
+};
+
+
+export {
+    globalReducer, authReducer
+}

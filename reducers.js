@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux';
-import  globalReducer  from './duck/reducers'
+import  {globalReducer, authReducer}  from './duck/reducers'
 
 const rootReducer = combineReducers({
-  global: globalReducer
+  global: globalReducer,
+  auth: authReducer
 });
 
 export default rootReducer;
