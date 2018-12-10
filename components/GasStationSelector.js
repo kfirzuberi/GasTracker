@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Image } from 'react-native';
 import { ButtonGroup } from 'react-native-elements'
 import { connect } from 'react-redux'
+import GasStationFinder from '../services/GasStationFinder';
 
 const gasStationMap = ['Sonol', 'Paz', 'Delek', 'DorAlon'];
 
@@ -11,15 +12,28 @@ class GasStationSelector extends Component {
     this.state = {
       selectedIndex: 0
     }
+
     this.updateIndex = this.updateIndex.bind(this)
   }
+  
+  componentDidMount() {
+    if(this.props.autoSelect===true){
+      GasStationFinder.getClosestGasStation().then(data => {
+        if(data.gasStation){
+          this.updateIndex(data.gasStation.id);
+        }
+
+        this.props.updateLocation(data.position);   
+      }).catch(error => {
+        console.log(error);
+      })
+    }
+  }
+
   updateIndex(selectedIndex) {
     this.setState({ selectedIndex });
     this.props.updateGasStation(gasStationMap[selectedIndex]);
-
   }
-  //https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=32.0041473,34.8194882&radius=1500&keyword=gas&key=AIzaSyDhQ07lVAQaV83qLQo6QyJt4H0KpHtZyYU&type=gas_station
-
 
   render() {
     const component1 = () => <Image style={styles.fieldIcon} source={require('../assets/images/gasStationIcons/sonol.png')} />
