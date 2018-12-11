@@ -1,13 +1,16 @@
 import types from './types';
 
 const globalInitialState = {
-    personData: {},
     records: []
 }
 
 const authInitialState = {
     loading: true,
     user : undefined,
+}
+
+const settingsInitialState = {
+    carID : ''
 }
 
 const globalReducer = (state = globalInitialState, action) => {
@@ -37,6 +40,25 @@ const authReducer = (state = authInitialState, action) => {
     }
 };
 
+const settingsReducer = (state = settingsInitialState, action) => {
+    switch (action.type) {
+        case types.SAVE_SETTINGS:
+            return {
+                ...state,
+                ...action.value
+            };
+            case types.GET_SETTINGS:
+            return {
+                ...state,
+                ...action.value
+            };
+        default:
+            return state;
+    }
+};
+
+
+
 export {
-    globalReducer, authReducer
+    globalReducer, authReducer, settingsReducer
 }

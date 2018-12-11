@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { Card, Button, Text } from "react-native-elements";
 import { connect } from 'react-redux';
 import { globalOperations } from '../duck/index';
+import SettingsForm from '../components/SettingsForm';
 
 class Profile extends Component {
 
@@ -32,6 +33,10 @@ class Profile extends Component {
                         title="SIGN OUT"
                         onPress={this.handleOnSignOut}
                     />
+                </Card>
+
+                <Card title="User settings">
+                    <SettingsForm/>
                 </Card>
             </View>
         )

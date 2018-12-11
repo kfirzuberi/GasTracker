@@ -8,6 +8,7 @@ import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import moment from 'moment';
 import NavigationService from '../services/NavigationService';
+import UserSettingsService from '../services/UserSettingsService';
 
 setTimeout = BackgroundTimer.setTimeout.bind(BackgroundTimer);
 setInterval = BackgroundTimer.setInterval.bind(BackgroundTimer);
@@ -33,7 +34,7 @@ firestore.settings({ timestampsInSnapshots: true });
 firebase.firestore.setLogLevel('debug');
 
 const addNewRecordDispatcher = newRecord => {
-  return dispatch => {
+  return (dispatch, getState) => {
     uploadImages(newRecord).then(data => {
       const { currentUser } = firebase.auth();
 
@@ -44,6 +45,7 @@ const addNewRecordDispatcher = newRecord => {
         gasStation: newRecord.gasStation,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         uid: `${currentUser.uid}`,
+        carID: getState().settings.carID,
         location: new firebase.firestore.GeoPoint(newRecord.location.latitude, newRecord.location.longitude),
         ...data
       };
@@ -89,7 +91,6 @@ const uploadImage = (uri, name, mime = 'image/jpeg') => {
     let imgUri = uri; let uploadBlob = null;
     const uploadUri = Platform.OS === 'ios' ? imgUri.replace('file://', '') : imgUri;
     const { currentUser } = firebase.auth();
-    // const currentUser = { uid: 'kfir' };
     const dir = moment().format('DD-MM-YYYY HH:mm');
     const imageRef = firebase.storage().ref(`/images/${currentUser.uid}/${dir}/${name}`)
 
@@ -208,11 +209,33 @@ const watchAuthStateChangedDispatcher = () => {
   }
 };
 
+
+const saveUserSettingsDispatcher = settings => {
+  return dispatch => {
+    UserSettingsService.saveUserSettings(settings).then(() => {
+      console.log('saving', settings);
+      dispatch(actions.saveUserSettings(settings));
+    })
+  }
+};
+
+const getUserSettingsDispatcher = settings => {
+  return dispatch => {
+    UserSettingsService.getUserSettings().then(settings => {
+      console.log('getting', settings);
+      dispatch(actions.getUserSettings(settings));
+    })
+  }
+};
+
+
 export default {
   addNewRecordDispatcher,
   watchRecordsDispatcher,
   signUpDispatcher,
   signOutDispatcher,
   signInDispatcher,
-  watchAuthStateChangedDispatcher
+  watchAuthStateChangedDispatcher,
+  saveUserSettingsDispatcher,
+  getUserSettingsDispatcher
 }

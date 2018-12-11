@@ -42,11 +42,27 @@ const authStateChanged = user => {
     };
 };
 
+const saveUserSettings = settings => {
+    return {
+        type: types.SAVE_SETTINGS,
+        value: settings
+    };
+};
+
+const getUserSettings = settings => {
+    return {
+        type: types.GET_SETTINGS,
+        value: settings
+    };
+};
+
 export default {
     fetchRecords,
     addNewRecord,
     signUp,
     signIn,
     signOut,
-    authStateChanged
+    authStateChanged,
+    saveUserSettings,
+    getUserSettings
 }

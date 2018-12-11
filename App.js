@@ -9,11 +9,12 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
+import { Provider } from 'react-redux'
+
+import RouterNavigator from "./RouterNavigator";
 import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import { Provider } from 'react-redux'
 import rootReducer from './reducers';
-import RouterNavigator from "./RouterNavigator";
 
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 
@@ -23,6 +24,7 @@ const instructions = Platform.select({
     'Double tap R on your keyboard to reload,\n' +
     'Shake or press menu button for dev menu',
 });
+
 
 type Props = {};
 export default class App extends Component<Props> {
