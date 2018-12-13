@@ -15,6 +15,20 @@ const addNewRecord = newRecord => {
     };
 };
 
+const addNewRecordDone = newRecord => {
+    return {
+        type: types.ADD_NEW_RECORD_DONE,
+        value: newRecord
+    };
+};
+
+const addNewRecordFailed = error => {
+    return {
+        type: types.ADD_NEW_RECORD_FAILED,
+        value: error
+    };
+};
+
 const signUp = newUser => {
     return {
         type: types.SIGN_UP,
@@ -59,6 +73,8 @@ const getUserSettings = settings => {
 export default {
     fetchRecords,
     addNewRecord,
+    addNewRecordDone,
+    addNewRecordFailed,
     signUp,
     signIn,
     signOut,

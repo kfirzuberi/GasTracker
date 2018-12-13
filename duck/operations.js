@@ -35,6 +35,8 @@ firebase.firestore.setLogLevel('debug');
 
 const addNewRecordDispatcher = newRecord => {
   return (dispatch, getState) => {
+    dispatch(actions.addNewRecord(newRecord));
+
     uploadImages(newRecord).then(data => {
       const { currentUser } = firebase.auth();
 
@@ -51,11 +53,11 @@ const addNewRecordDispatcher = newRecord => {
       };
 
       firestore.collection('records').add(itemToAdd).then(ref => {
+        dispatch(actions.addNewRecordDone(ref, newRecord));
       }).catch(error => {
+        dispatch(actions.addNewRecordFailed(error, newRecord));
       });
-    })
-
-    dispatch(actions.addNewRecord(newRecord));
+    })  
   }
 };
 

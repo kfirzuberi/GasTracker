@@ -1,16 +1,17 @@
 import types from './types';
 
 const globalInitialState = {
-    records: []
+    records: [],
+    isSaving: false
 }
 
 const authInitialState = {
     loading: true,
-    user : undefined,
+    user: undefined,
 }
 
 const settingsInitialState = {
-    carID : ''
+    carID: ''
 }
 
 const globalReducer = (state = globalInitialState, action) => {
@@ -21,6 +22,18 @@ const globalReducer = (state = globalInitialState, action) => {
                 records: action.value
             };
 
+        case types.ADD_NEW_RECORD:
+            return {
+                ...state,
+                isSaving: true
+            }
+
+        case types.ADD_NEW_RECORD_DONE:
+        case types.ADD_NEW_RECORD_FAILED:
+            return {
+                ...state,
+                isSaving: false
+            }
         default:
             return state;
     }
@@ -29,11 +42,11 @@ const globalReducer = (state = globalInitialState, action) => {
 const authReducer = (state = authInitialState, action) => {
     switch (action.type) {
         case types.AUTH_STATE_CHANGED:
-        return {
-            ...state,
-            user: action.value.user,
-            loading: action.value.loading,
-        };
+            return {
+                ...state,
+                user: action.value.user,
+                loading: action.value.loading,
+            };
 
         default:
             return state;
@@ -47,7 +60,7 @@ const settingsReducer = (state = settingsInitialState, action) => {
                 ...state,
                 ...action.value
             };
-            case types.GET_SETTINGS:
+        case types.GET_SETTINGS:
             return {
                 ...state,
                 ...action.value

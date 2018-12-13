@@ -1,14 +1,21 @@
 import React, { Component } from 'react';
-import { AppRegistry, FlatList, StyleSheet, Text, View, Image, TextInput, ScrollView, Button, Dimensions, TouchableHighlight } from 'react-native';
+import { AppRegistry, FlatList, StyleSheet, Text, View, Image, TextInput,Button, ScrollView, Dimensions, TouchableHighlight } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import { connect } from 'react-redux'
 import { globalOperations } from '../duck/index';
 import GasStationSelector from './GasStationSelector';
 
+const isValidNumber = number =>{
+  const num = parseFloat(number);
+
+  return !isNaN(num) && num > 0;
+};
+
 class NewRecordForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isDisabled : true,
       price: 0,
       liters: 0,
       km: 0,
@@ -38,7 +45,16 @@ class NewRecordForm extends Component {
     });
   }
 
+  componentDidUpdate(){
+    const isEnabled =  isValidNumber(this.state.km) && isValidNumber(this.state.liters) && isValidNumber(this.state.price) &&
+    this.state.gasStation!=='' && isValidNumber(this.state.location.latitude) && isValidNumber(this.state.location.longitude);
+
+  }
+
   render() {
+    const  isValid = isValidNumber(this.state.km) && isValidNumber(this.state.liters) && isValidNumber(this.state.price) &&
+    this.state.gasStation!=='' && isValidNumber(this.state.location.latitude) && isValidNumber(this.state.location.longitude)
+  
     return (
       <View >
         <View style={styles.row}>
@@ -90,7 +106,9 @@ class NewRecordForm extends Component {
           title="Save"
           color="#841584"
           accessibilityLabel="Learn more about this purple button"
+          disabled={!isValid || this.props.isSaving}
         />
+      
       </View>
     );
   }
@@ -147,9 +165,11 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = state => ({
-
-})
+const mapStateToProps = (state) => {
+  return {
+    isSaving: state.global.isSaving
+  };
+}
 
 const mapDispatchToProps = dispatch => ({
   addNewRecord: newRecord => dispatch(globalOperations.addNewRecordDispatcher(newRecord))

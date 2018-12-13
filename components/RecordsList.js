@@ -34,7 +34,8 @@ class RecordsList extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    width: width
+    width: width,
+    height: height * 0.5
   },
   item: {
     padding: 10,

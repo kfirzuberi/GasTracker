@@ -10,23 +10,27 @@ class GasStationSelector extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      selectedIndex: 0
+      selectedIndex: 0,
+      loading: false
     }
 
     this.updateIndex = this.updateIndex.bind(this)
   }
-  
+
   componentDidMount() {
-    if(this.props.autoSelect===true){
+    this.setState({ loading: true });
+    if (this.props.autoSelect === true) {
       GasStationFinder.getClosestGasStation().then(data => {
-        if(data.gasStation){
+        if (data.gasStation) {
           this.updateIndex(data.gasStation.id);
         }
 
-        this.props.updateLocation(data.position);   
+        this.props.updateLocation(data.position);
       }).catch(error => {
         console.log(error);
-      })
+      }).then(() => {
+        this.setState({ loading: false });
+      });
     }
   }
 
@@ -42,14 +46,13 @@ class GasStationSelector extends Component {
     const component4 = () => <Image style={styles.fieldIcon} source={require('../assets/images/gasStationIcons/dorAlon.png')} />
 
     const buttons = [{ element: component1 }, { element: component2 }, { element: component3 }, { element: component4 }]
-    const { selectedIndex } = this.state
+    const { selectedIndex } = this.state;
+
+    if (this.state.loading)
+      return <Image style={styles.fieldIcon} source={require('../assets/images/common/loading.gif')} />;
 
     return (
-      <ButtonGroup
-        onPress={this.updateIndex}
-        selectedIndex={selectedIndex}
-        buttons={buttons}
-        containerStyle={{ height: 50, flex: 1 }} />
+      <ButtonGroup onPress={this.updateIndex} selectedIndex={selectedIndex} buttons={buttons} containerStyle={{ height: 50, flex: 1 }} />
     );
   }
 }
@@ -72,15 +75,8 @@ const styles = StyleSheet.create({
 
 });
 
+const mapStateToProps = state => ({})
 
-const mapStateToProps = state => ({
+const mapDispatchToProps = dispatch => ({})
 
-})
-
-const mapDispatchToProps = dispatch => ({
-})
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(GasStationSelector)
+export default connect(mapStateToProps, mapDispatchToProps)(GasStationSelector)

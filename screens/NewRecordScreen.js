@@ -12,7 +12,6 @@ export class NewRecordScreen extends Component {
     return (
       <View>
         <NewRecordForm> </NewRecordForm>
-        <Button onPress={() => this.props.navigation.navigate('HomeScreen')} title="Home" />
       </View>
     )
   }
