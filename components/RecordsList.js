@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { AppRegistry, FlatList, StyleSheet, Text, View, Image, Dimensions } from 'react-native';
+import { AppRegistry, FlatList, StyleSheet, Text, View, Image, Dimensions, TouchableOpacity,TouchableHighlight  } from 'react-native';
 import { RecordItem } from './RecordItem';
 
 import { connect } from 'react-redux';
 import { List, ListItem } from 'react-native-elements'
+import NavigationService from '../services/NavigationService'
 
 import { globalOperations } from '../duck/index';
 
@@ -18,7 +19,12 @@ class RecordsList extends React.Component {
   }
 
   renderItem = ({ item }) => (
+    <TouchableOpacity onPress={() =>NavigationService.navigate('RecordDetailsScreen', {item})}>
+    <View>
     <RecordItem item={item} />
+    </View>
+   
+     </TouchableOpacity>
   );
 
   render() {
