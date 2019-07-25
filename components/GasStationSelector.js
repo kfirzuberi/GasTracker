@@ -27,7 +27,7 @@ class GasStationSelector extends Component {
 
         this.props.updateLocation(data.position);
       }).catch(error => {
-        console.log(error);
+        this.props.updateLocation( { longitude:0, latitude:0, accuracy :0});
       }).then(() => {
         this.setState({ loading: false });
       });

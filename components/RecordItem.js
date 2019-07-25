@@ -3,10 +3,7 @@ import { AppRegistry, FlatList, StyleSheet, Text, View, Image } from 'react-nati
 import { List, ListItem } from 'react-native-elements'
 import moment from 'moment';
 
-
 export class RecordItem extends Component {
-
-
   getGasImage = (gasStation) => {
     switch ((gasStation + "").toLowerCase()) {
       case 'sonol':
@@ -49,9 +46,6 @@ export class RecordItem extends Component {
         avatar={this.getGasImage(this.props.item.gasStation)}
         avatarStyle={styles.avatarIcon}
       />
-
-
-
     );
   }
 }
